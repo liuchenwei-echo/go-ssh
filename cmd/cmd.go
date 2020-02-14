@@ -14,7 +14,7 @@ import (
 const (
 	usage = `
 Version:
-	v0.1.0
+	%s build on %s by %s
 
 Usage:
 	s [alias|ssh arguments]	ssh connect
@@ -54,6 +54,12 @@ Options:
 	-k keyPath		ssh server key path (default: ~/.ssh/id_rsa)
 	-proxy proxy		only socks5 like socks5://127.0.0.1:1086
 `
+)
+
+var (
+	Version = "unknown"
+	BuildOn = "unknown"
+	User = "unknown"
 )
 
 func main() {
@@ -158,9 +164,12 @@ func doEdit(args []string) {
 		// 检查
 		serverConfig.Check()
 		// 添加配置
-		configs.AddServerConfig(alias, serverConfig)
+		err := configs.AddServerConfig(alias, serverConfig)
+		if err != nil {
+			log.Fatalf("edit ssh server config error: %s", err.Error())
+		}
 	} else {
-		log.Fatalf("add ssh server config arguments is empty")
+		log.Fatalf("can't edit ssh server config without arguments")
 	}
 }
 
@@ -188,9 +197,12 @@ func doAdd(args []string) {
 		// 检查
 		serverConfig.Check()
 		// 添加配置
-		configs.AddServerConfig(alias, serverConfig)
+		err := configs.AddServerConfig(alias, serverConfig)
+		if err != nil {
+			log.Fatalf("add ssh server config error: %s", err.Error())
+		}
 	} else {
-		log.Fatalf("add ssh server config arguments is empty")
+		log.Fatalf("can't add ssh server config without arguments")
 	}
 }
 
@@ -200,6 +212,8 @@ func doRemove(args []string) {
 		alias := args[1]
 		configs := ssh.LoadConfig()
 		configs.RemoveServerConfig(alias)
+	} else {
+		log.Fatalf("can't remove ssh server config without arguments")
 	}
 }
 
@@ -225,7 +239,7 @@ func doList(args []string) {
 
 // help
 func doHelp(args []string) {
-	var helpUsage = usage
+	var helpUsage = fmt.Sprintf(usage, Version, BuildOn, User)
 	if len(args) > 1 {
 		switch args[1] {
 		case "add":
