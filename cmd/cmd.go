@@ -235,7 +235,7 @@ func doList(args []string) {
 			if server.Port != 22 {
 				info = info + "[:" + strconv.Itoa(server.Port) + "]"
 			}
-			if server.Password != "" {
+			if len(server.Password) > 0 {
 				info = info + ":" + server.Password
 			}
 			if len(server.Proxy) > 0 {
