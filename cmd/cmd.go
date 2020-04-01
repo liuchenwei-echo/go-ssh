@@ -24,7 +24,7 @@ Commands:
 	add <alias>	connect ssh
 	edit <alias>	add ssh config
 	rm <alias>	list ssh config
-	list		edit ssh config
+	list <filter>	edit ssh config
 	help <alias>	for more information about that command 
 `
 	addUsage = `
