@@ -59,7 +59,7 @@ Options:
 var (
 	Version = "unknown"
 	BuildOn = "unknown"
-	User = "unknown"
+	User    = "unknown"
 )
 
 func main() {
@@ -225,15 +225,24 @@ func doConfig() {
 func doList(args []string) {
 	configs := ssh.LoadConfig()
 	servers := configs.Servers
+	match := ""
+	if len(args) > 1 {
+		match = args[1]
+	}
 	for alias, server := range servers {
-		info := fmt.Sprintf("[%s]%s@%s", alias, server.User, server.Host)
-		if server.Port != 22 {
-			info = info + "[:" + strconv.Itoa(server.Port) + "]"
+		if match == "" || strings.Contains(strings.ToLower(alias), strings.ToLower(match)) {
+			info := fmt.Sprintf("[%s]%s@%s", alias, server.User, server.Host)
+			if server.Port != 22 {
+				info = info + "[:" + strconv.Itoa(server.Port) + "]"
+			}
+			if server.Password != "" {
+				info = info + ":" + server.Password
+			}
+			if len(server.Proxy) > 0 {
+				info = info + ", Proxy: " + server.Proxy
+			}
+			fmt.Println(info)
 		}
-		if len(server.Proxy) > 0 {
-			info = info + ", Proxy: " + server.Proxy
-		}
-		fmt.Println(info)
 	}
 }
 
